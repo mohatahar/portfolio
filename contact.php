@@ -78,35 +78,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $log_message .= "IP: " . $_SERVER['REMOTE_ADDR'] . "\n";
         $log_message .= "Navigateur: " . $_SERVER['HTTP_USER_AGENT'] . "\n";
         $log_message .= "--------------------------------------------------\n\n";
-        
+
         // Créer le dossier logs s'il n'existe pas
         if (!file_exists('logs')) {
             mkdir('logs', 0755, true);
         }
-        
+
         // Tentative d'écriture dans le fichier log
         $log_file = 'logs/contact_messages.log';
         $log_success = file_put_contents($log_file, $log_message, FILE_APPEND);
-        
+
         // Si vous essayez d'utiliser la fonction mail() (qui peut échouer dans l'environnement local)
         $to = "taharmoha02@gmail.com";
         $subject_text = isset($subjects[$subject]) ? $subjects[$subject] : $subject;
         $subject_email = "Nouveau message de contact: $subject_text";
-        
+
         $email_content = "Nom: $name\n";
         $email_content .= "Email: $email\n";
         if (!empty($phone)) {
             $email_content .= "Téléphone: $phone\n";
         }
         $email_content .= "\nMessage:\n$message";
-        
+
         $headers = "From: $email\r\n";
         $headers .= "Reply-To: $email\r\n";
         $headers .= "X-Mailer: PHP/" . phpversion();
-        
+
         // Essayez d'envoyer l'email, mais ne vous fiez pas à sa réussite en environnement local
         @mail($to, $subject_email, $email_content, $headers);
-        
+
         // Considérer le message comme envoyé si au moins le log a fonctionné
         if ($log_success) {
             // Réinitialisation des champs et affichage du message de succès
@@ -135,6 +135,7 @@ if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -144,12 +145,17 @@ if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/theme-styles.css">
     <script src="assets/assets/aos/aos.js"></script>
+    <link rel="stylesheet" href="assets/css/haut.css">
+    <script src="assets/js/haut.js"></script>
+
 </head>
+
 <body>
     <section class="contact-hero">
         <div class="container">
             <h1 data-aos="fade-down">Me contacter</h1>
-            <p data-aos="fade-up" data-aos-delay="200">Vous avez un projet en tête ou une question ? Je suis à votre écoute.</p>
+            <p data-aos="fade-up" data-aos-delay="200">Vous avez un projet en tête ou une question ? Je suis à votre
+                écoute.</p>
         </div>
     </section>
 
@@ -185,7 +191,8 @@ if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['
                                 title="LinkedIn">
                                 <i class="fab fa-linkedin"></i>
                             </a>
-                            <a href="https://x.com/taharmoha02?t=OpNK9qV0y1WP6M06w52o9O&s=09" target="_blank" title="Twitter">
+                            <a href="https://x.com/taharmoha02?t=OpNK9qV0y1WP6M06w52o9O&s=09" target="_blank"
+                                title="Twitter">
                                 <i class="fab fa-twitter"></i>
                             </a>
                         </div>
@@ -434,6 +441,11 @@ if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['
             </div>
         </div>
     </section>
+
+    <!-- Bouton de retour en haut -->
+    <div id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
 
     <!-- Script pour la validation front-end et les interactions -->
     <script>

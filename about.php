@@ -98,7 +98,9 @@ $interests = [
 <link href="assets/assets/aos/aos.css" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/theme-styles.css">
+<link rel="stylesheet" href="assets/css/haut.css">
 <script src="assets/assets/aos/aos.js"></script>
+<script src="assets/js/haut.js"></script>
 <style>
     /* Style pour les timeline-item comme skill-item */
     .timeline-content {
@@ -228,217 +230,222 @@ $interests = [
     </div>
 </section>
 
-    <!-- Nouvelle section "Résumé" avec statistiques -->
-    <section class="stats-banner">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item" data-aos="fade-up">
-                    <div class="stat-number" data-count="15">0</div>
-                    <div class="stat-label">Années d'expérience</div>
-                </div>
-                <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
-                    <div class="stat-number" data-count="2">0</div>
-                    <div class="stat-label">Diplômes obtenus</div>
-                </div>
-                <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
-                    <div class="stat-number" data-count="220">0</div>
-                    <div class="stat-label">Projets réalisés</div>
-                </div>
+<!-- Nouvelle section "Résumé" avec statistiques -->
+<section class="stats-banner">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item" data-aos="fade-up">
+                <div class="stat-number" data-count="15">0</div>
+                <div class="stat-label">Années d'expérience</div>
+            </div>
+            <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-number" data-count="2">0</div>
+                <div class="stat-label">Diplômes obtenus</div>
+            </div>
+            <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-number" data-count="220">0</div>
+                <div class="stat-label">Projets réalisés</div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Section Expérience professionnelle améliorée -->
-    <section class="skills-content section-padding">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title" data-aos="fade-up">Expérience professionnelle</h2>
-                <p class="section-description" data-aos="fade-up" data-aos-delay="100">Mon parcours professionnel au fil
-                    des années</p>
-            </div>
+<!-- Section Expérience professionnelle améliorée -->
+<section class="skills-content section-padding">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title" data-aos="fade-up">Expérience professionnelle</h2>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="100">Mon parcours professionnel au fil
+                des années</p>
+        </div>
 
-            <div class="timeline">
-                <?php
-                foreach ($experiences as $index => $exp) {
-                    $startDate = date('Y', strtotime($exp['start_date']));
-                    $endDate = empty($exp['end_date']) ? 'Présent' : date('Y', strtotime($exp['end_date']));
-                    $duration = $endDate == 'Présent'
-                        ? floor((time() - strtotime($exp['start_date'])) / (60 * 60 * 24 * 30)) . ' mois'
-                        : floor((strtotime($exp['end_date']) - strtotime($exp['start_date'])) / (60 * 60 * 24 * 30)) . ' mois';
+        <div class="timeline">
+            <?php
+            foreach ($experiences as $index => $exp) {
+                $startDate = date('Y', strtotime($exp['start_date']));
+                $endDate = empty($exp['end_date']) ? 'Présent' : date('Y', strtotime($exp['end_date']));
+                $duration = $endDate == 'Présent'
+                    ? floor((time() - strtotime($exp['start_date'])) / (60 * 60 * 24 * 30)) . ' mois'
+                    : floor((strtotime($exp['end_date']) - strtotime($exp['start_date'])) / (60 * 60 * 24 * 30)) . ' mois';
+                $delay = $index * 100;
+                ?>
+                <div class="timeline-item" data-aos="fade-up" data-aos-delay="<?php echo $delay; ?>">
+                    <div class="timeline-date"><?php echo $startDate . ' - ' . $endDate; ?></div>
+                    <div class="timeline-content">
+                        <h3><?php echo htmlspecialchars($exp['position']); ?></h3>
+                        <h4><?php echo htmlspecialchars($exp['company']) . ' • ' . $duration; ?></h4>
+                        <p><?php echo $exp['description']; ?></p>
+
+                        <?php if (!empty($exp['achievements'])): ?>
+                            <div class="exp-achievements">
+                                <h5>Réalisations clés :</h5>
+                                <ul>
+                                    <?php
+                                    $achievementsArray = explode('|', $exp['achievements']);
+                                    foreach ($achievementsArray as $achievement) {
+                                        echo '<li>' . htmlspecialchars($achievement) . '</li>';
+                                    }
+                                    ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($exp['technologies'])): ?>
+                            <div class="exp-technologies">
+                                <div class="project-tags">
+                                    <?php
+                                    $technologiesArray = explode('|', $exp['technologies']);
+                                    foreach ($technologiesArray as $tech) {
+                                        echo '<span class="tag">' . htmlspecialchars($tech) . '</span>';
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+</section>
+
+
+<!-- Section Formation améliorée -->
+<section class="skills-content section-padding">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title" data-aos="fade-up">Formation</h2>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="100">Mon parcours académique et mes
+                certifications</p>
+        </div>
+
+        <div class="timeline">
+            <?php
+            foreach ($education as $edu) {
+                ?>
+                <div class="timeline-item" data-aos="fade-up" data-aos-delay="<?php echo $delay; ?>">
+                    <div class="timeline-date"><?php echo $edu['graduation_year']; ?></div>
+                    <div class="timeline-content">
+                        <h3><?php echo htmlspecialchars($edu['degree']); ?></h3>
+                        <h4><?php echo htmlspecialchars($edu['institution']); ?></h4>
+                        <p><?php echo $edu['description']; ?></p>
+
+                        <?php if (!empty($edu['honors'])): ?>
+                            <div class="edu-honors">
+                                <h5>Distinctions :</h5>
+                                <p><?php echo htmlspecialchars($edu['honors']); ?></p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+</section>
+
+<!-- Section intérêts personnels -->
+<section class="skills-content section-padding">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Centres d'intérêt</h2>
+            <p class="section-description">Ce qui me passionne en dehors du travail</p>
+        </div>
+
+        <div class="interests-content">
+            <div class="interests-grid">
+                <?php foreach ($interests as $index => $interest):
                     $delay = $index * 100;
                     ?>
-                    <div class="timeline-item" data-aos="fade-up" data-aos-delay="<?php echo $delay; ?>">
-                        <div class="timeline-date"><?php echo $startDate . ' - ' . $endDate; ?></div>
-                        <div class="timeline-content">
-                            <h3><?php echo htmlspecialchars($exp['position']); ?></h3>
-                            <h4><?php echo htmlspecialchars($exp['company']) . ' • ' . $duration; ?></h4>
-                            <p><?php echo $exp['description']; ?></p>
-
-                            <?php if (!empty($exp['achievements'])): ?>
-                                <div class="exp-achievements">
-                                    <h5>Réalisations clés :</h5>
-                                    <ul>
-                                        <?php
-                                        $achievementsArray = explode('|', $exp['achievements']);
-                                        foreach ($achievementsArray as $achievement) {
-                                            echo '<li>' . htmlspecialchars($achievement) . '</li>';
-                                        }
-                                        ?>
-                                    </ul>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if (!empty($exp['technologies'])): ?>
-                                <div class="exp-technologies">
-                                    <div class="project-tags">
-                                        <?php
-                                        $technologiesArray = explode('|', $exp['technologies']);
-                                        foreach ($technologiesArray as $tech) {
-                                            echo '<span class="tag">' . htmlspecialchars($tech) . '</span>';
-                                        }
-                                        ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
+                    <div class="interest-item" data-aos="zoom-in" data-aos-delay="<?php echo $delay; ?>">
+                        <div class="interest-icon">
+                            <i class="<?php echo $interest['icon']; ?>"></i>
                         </div>
+                        <h3><?php echo htmlspecialchars($interest['name']); ?></h3>
+                        <p><?php echo htmlspecialchars($interest['description']); ?></p>
                     </div>
-                <?php } ?>
+                <?php endforeach; ?>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-
-    <!-- Section Formation améliorée -->
-    <section class="skills-content section-padding">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title" data-aos="fade-up">Formation</h2>
-                <p class="section-description" data-aos="fade-up" data-aos-delay="100">Mon parcours académique et mes
-                    certifications</p>
-            </div>
-
-            <div class="timeline">
-                <?php
-                foreach ($education as $edu) {
-                    ?>
-                    <div class="timeline-item" data-aos="fade-up" data-aos-delay="<?php echo $delay; ?>">
-                        <div class="timeline-date"><?php echo $edu['graduation_year']; ?></div>
-                        <div class="timeline-content">
-                            <h3><?php echo htmlspecialchars($edu['degree']); ?></h3>
-                            <h4><?php echo htmlspecialchars($edu['institution']); ?></h4>
-                            <p><?php echo $edu['description']; ?></p>
-
-                            <?php if (!empty($edu['honors'])): ?>
-                                <div class="edu-honors">
-                                    <h5>Distinctions :</h5>
-                                    <p><?php echo htmlspecialchars($edu['honors']); ?></p>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php } ?>
+<!-- Section CTA -->
+<section class="cta">
+    <div class="container">
+        <div class="cta-content" data-aos="zoom-in">
+            <h2>Intéressé(e) par une collaboration ?</h2>
+            <p>Si vous souhaitez discuter d'un projet ou en savoir plus sur mes services, n'hésitez pas à me
+                contacter.</p>
+            <div class="cta-buttons">
+                <a href="contact.php" class="btn btn-light">Me contacter</a>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Section intérêts personnels -->
-    <section class="skills-content section-padding">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Centres d'intérêt</h2>
-                <p class="section-description">Ce qui me passionne en dehors du travail</p>
-            </div>
+<!-- Bouton de retour en haut -->
+<div id="back-to-top" class="back-to-top">
+    <i class="fas fa-arrow-up"></i>
+</div>
 
-            <div class="interests-content">
-                <div class="interests-grid">
-                    <?php foreach ($interests as $index => $interest):
-                        $delay = $index * 100;
-                        ?>
-                        <div class="interest-item" data-aos="zoom-in" data-aos-delay="<?php echo $delay; ?>">
-                            <div class="interest-icon">
-                                <i class="<?php echo $interest['icon']; ?>"></i>
-                            </div>
-                            <h3><?php echo htmlspecialchars($interest['name']); ?></h3>
-                            <p><?php echo htmlspecialchars($interest['description']); ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Section CTA -->
-    <section class="cta">
-        <div class="container">
-            <div class="cta-content" data-aos="zoom-in">
-                <h2>Intéressé(e) par une collaboration ?</h2>
-                <p>Si vous souhaitez discuter d'un projet ou en savoir plus sur mes services, n'hésitez pas à me
-                    contacter.</p>
-                <div class="cta-buttons">
-                    <a href="contact.php" class="btn btn-light">Me contacter</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Script pour l'animation des compteurs et la gestion des onglets -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Initialisation de AOS
-            AOS.init({
-                easing: 'ease-out-back',
-                once: false,
-                mirror: false,
-                offset: 120
+<!-- Script pour l'animation des compteurs et la gestion des onglets -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialisation de AOS
+        AOS.init({
+            easing: 'ease-out-back',
+            once: false,
+            mirror: false,
+            offset: 120
+        });
+
+        // Animation des compteurs
+        const counters = document.querySelectorAll('.stat-number');
+        const speed = 200; // Plus le nombre est petit, plus c'est rapide
+
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+                const increment = target / speed;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(updateCount, 1);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+
+            // Démarrer l'animation uniquement lorsque l'élément est visible
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    updateCount();
+                    observer.disconnect();
+                }
             });
 
-            // Animation des compteurs
-            const counters = document.querySelectorAll('.stat-number');
-            const speed = 200; // Plus le nombre est petit, plus c'est rapide
+            observer.observe(counter);
+        });
 
-            counters.forEach(counter => {
-                const updateCount = () => {
-                    const target = +counter.getAttribute('data-count');
-                    const count = +counter.innerText;
-                    const increment = target / speed;
+        // Gestion des onglets
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
 
-                    if (count < target) {
-                        counter.innerText = Math.ceil(count + increment);
-                        setTimeout(updateCount, 1);
-                    } else {
-                        counter.innerText = target;
-                    }
-                };
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
 
-                // Démarrer l'animation uniquement lorsque l'élément est visible
-                const observer = new IntersectionObserver((entries) => {
-                    if (entries[0].isIntersecting) {
-                        updateCount();
-                        observer.disconnect();
-                    }
-                });
+                // Désactiver tous les onglets
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanels.forEach(panel => panel.classList.remove('active'));
 
-                observer.observe(counter);
-            });
-
-            // Gestion des onglets
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            const tabPanels = document.querySelectorAll('.tab-panel');
-
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetTab = button.getAttribute('data-tab');
-
-                    // Désactiver tous les onglets
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabPanels.forEach(panel => panel.classList.remove('active'));
-
-                    // Activer l'onglet sélectionné
-                    button.classList.add('active');
-                    document.getElementById(targetTab).classList.add('active');
-                });
+                // Activer l'onglet sélectionné
+                button.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
             });
         });
-    </script>
+    });
+</script>
 
-    <?php include 'includes/footer.php'; ?>
+<?php include 'includes/footer.php'; ?>

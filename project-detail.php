@@ -364,6 +364,9 @@ $relatedProjects = getRelatedProjects($projects, $project_id, $project['category
 ?>
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/theme-styles.css">
+<link rel="stylesheet" href="assets/css/haut.css">
+<script src="assets/js/haut.js"></script>
+
 <style>
   .project-detail {
     background: linear-gradient(135deg, var(--bg-alt), var(--border-color));
@@ -785,6 +788,11 @@ $relatedProjects = getRelatedProjects($projects, $project_id, $project['category
     </div>
   </div>
 </section>
+
+<!-- Bouton de retour en haut -->
+<div id="back-to-top" class="back-to-top">
+    <i class="fas fa-arrow-up"></i>
+</div>
 
 <script>
   function changeMainImage(src) {

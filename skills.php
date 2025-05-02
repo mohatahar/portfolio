@@ -478,8 +478,10 @@ usort($categories, function ($a, $b) use ($categoryOrder) {
 <link rel="stylesheet" href="assets/css/theme-styles.css">
 <link href="assets/assets/aos/aos.css" rel="stylesheet">
 <script src="assets/assets/aos/aos.js"></script>
-<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="assets/css/haut.css">
+<script src="assets/js/haut.js"></script>
+
 <style>
     .skills-content {
         background: linear-gradient(135deg, var(--bg-alt), var(--border-color));
@@ -732,6 +734,11 @@ usort($categories, function ($a, $b) use ($categoryOrder) {
         </div>
     </div>
 </section>
+
+<!-- Bouton de retour en haut -->
+<div id="back-to-top" class="back-to-top">
+    <i class="fas fa-arrow-up"></i>
+</div>
 
 <script>
     // Initialisation de AOS

@@ -181,6 +181,9 @@ function getProjectTechnologies($project_technologies, $all_technologies)
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/theme-styles.css">
 <script src="assets/assets/aos/aos.js"></script>
+<link rel="stylesheet" href="assets/css/haut.css">
+<script src="assets/js/haut.js"></script>
+
 <style>
   /* Hero section */
   .projects-hero {
@@ -533,6 +536,11 @@ function getProjectTechnologies($project_technologies, $all_technologies)
     <button class="close-modal" id="closeModal">&times;</button>
     <img class="modal-image" id="modalImage" src="" alt="Image du projet">
   </div>
+</div>
+
+<!-- Bouton de retour en haut -->
+<div id="back-to-top" class="back-to-top">
+    <i class="fas fa-arrow-up"></i>
 </div>
 
 <!-- Script pour gérer l'ouverture/fermeture du modal -->
