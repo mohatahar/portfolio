@@ -10,6 +10,7 @@
     <link href="assets/assets/fontawesome-free-6.7.1-web/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/theme-styles.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="assets/images/profile.png" type="image/png">
     <style>
         @media (max-width: 768px) {
     /* Menu mobile fermé par défaut */
