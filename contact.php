@@ -370,9 +370,7 @@ if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['
                         </div>
                         <div class="faq-answer">
                             <p>Les délais dépendent de la complexité du projet, de sa portée et de ma charge de travail
-                                actuelle. Pour un site vitrine simple, comptez environ 2-3 semaines. Pour des
-                                applications plus complexes, le délai peut aller de 1 à 3 mois. Je vous fournirai
-                                toujours un calendrier détaillé au début du projet.</p>
+                                actuelle. Je vous fournirai toujours un calendrier détaillé au début du projet.</p>
                         </div>
                     </div>
 

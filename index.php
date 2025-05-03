@@ -641,6 +641,10 @@ $skillsCategories = [
             .dynamic-text-wrapper {
                 height: 50px;
             }
+
+            .dynamic-text {
+                font-size: 30px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -660,9 +664,19 @@ $skillsCategories = [
                 height: 40px;
             }
 
+            .dynamic-text {
+                font-size: 26px;
+            }
+
             .profile-circle {
                 width: 250px;
                 height: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dynamic-text {
+                font-size: 22px;
             }
         }
     </style>
@@ -984,7 +998,7 @@ $skillsCategories = [
         // Animation de texte dynamique
         document.addEventListener('DOMContentLoaded', function () {
             const dynamicText = document.querySelector('.dynamic-text');
-            const phrases = ["Développement Full Stack", "Applications Web & Bureau", "Solutions Mobiles Multiplateformes", "Architecture Frontend/Backend", "Technologies Cloud & DevOps"];
+            const phrases = ["Développement Full Stack", "Applications Web & Bureau", "Applications Mobiles", "Architecture Frontend/Backend", "Technologies Cloud & DevOps"];
             let currentPhrase = 0;
             let currentChar = 0;
             let isDeleting = false;
