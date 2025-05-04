@@ -1,6 +1,4 @@
 <?php
-// contact.php - En-tête modifié avec output buffering
-// Commencer la mise en tampon de sortie
 ob_start();
 
 session_start();
@@ -9,6 +7,7 @@ include 'includes/header.php';
 
 // Initialisation des variables
 $name = $email = $phone = $subject = $message = '';
+// On retire la variable sendConfirmation car on enverra toujours la confirmation
 $errors = [];
 $success = false;
 $subjects = [
@@ -34,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_SPECIAL_CHARS);
     $subject = filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_SPECIAL_CHARS);
     $message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_SPECIAL_CHARS);
+    // On n'a plus besoin de récupérer sendConfirmation car on enverra toujours la confirmation
 
     // Validation
     if (empty($name)) {
@@ -66,63 +66,255 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Si pas d'erreurs, envoi du message
     if (empty($errors)) {
-        // Si vous utilisez la solution de journalisation des messages
-        $log_message = "Date: " . date('Y-m-d H:i:s') . "\n";
-        $log_message .= "Nom: $name\n";
-        $log_message .= "Email: $email\n";
-        if (!empty($phone)) {
-            $log_message .= "Téléphone: $phone\n";
+        // Définir l'indicateur d'erreur d'email par défaut
+        $email_error = false;
+        $email_sent = false;
+
+        // Option 1: Utiliser PHPMailer (recommandé)
+        // Vérifier si PHPMailer est installé
+        if (file_exists('vendor/autoload.php')) {
+            require 'vendor/autoload.php';
+            
+            try {
+                $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+                
+                // Configuration du serveur
+                $mail->isSMTP();                                      // Utiliser SMTP
+                $mail->Host       = 'smtp.gmail.com';                 // Serveur SMTP (changer selon votre fournisseur)
+                $mail->SMTPAuth   = true;                             // Activer l'authentification SMTP
+                $mail->Username   = 'taharmoha02@gmail.com';          // SMTP username
+                $mail->Password   = 'jzkl sbvt qkbt iccx';         // SMTP password (utiliser un mot de passe d'application)
+                $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS; // TLS ou SSL
+                $mail->Port       = 465;                              // Port SMTP (465 pour SSL, 587 pour TLS)
+                
+                // Destinataires
+                $mail->setFrom($email, $name);
+                $mail->addAddress('taharmoha02@gmail.com');           // Ajouter un destinataire
+                $mail->addReplyTo($email, $name);
+                
+                // Contenu
+                $mail->isHTML(true);
+                $subject_text = isset($subjects[$subject]) ? $subjects[$subject] : $subject;
+                $mail->Subject = "Nouveau message de contact: $subject_text";
+                
+                // Corps du message en HTML
+                $htmlContent = "<h2>Nouveau message de contact</h2>";
+                $htmlContent .= "<p><strong>Nom:</strong> $name</p>";
+                $htmlContent .= "<p><strong>Email:</strong> $email</p>";
+                if (!empty($phone)) {
+                    $htmlContent .= "<p><strong>Téléphone:</strong> $phone</p>";
+                }
+                $htmlContent .= "<p><strong>Sujet:</strong> $subject_text</p>";
+                $htmlContent .= "<p><strong>Message:</strong><br>" . nl2br($message) . "</p>";
+                
+                // Version texte brut alternative
+                $textContent = "Nom: $name\n";
+                $textContent .= "Email: $email\n";
+                if (!empty($phone)) {
+                    $textContent .= "Téléphone: $phone\n";
+                }
+                $textContent .= "Sujet: $subject_text\n";
+                $textContent .= "\nMessage:\n$message";
+                
+                $mail->Body    = $htmlContent;
+                $mail->AltBody = $textContent;
+                
+                $mail->send();
+                // Email envoyé avec succès
+                $email_sent = true;
+                
+                // On envoie toujours l'email de confirmation
+                if ($email_sent) {
+                    $confirmationMail = new PHPMailer\PHPMailer\PHPMailer(true);
+                    
+                    // Configuration du serveur (même configuration que précédemment)
+                    $confirmationMail->isSMTP();
+                    $confirmationMail->Host       = 'smtp.gmail.com';
+                    $confirmationMail->SMTPAuth   = true;
+                    $confirmationMail->Username   = 'taharmoha02@gmail.com';
+                    $confirmationMail->Password   = 'jzkl sbvt qkbt iccx';
+                    $confirmationMail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+                    $confirmationMail->Port       = 465;
+                    
+                    // Destinataires (cette fois-ci, on envoie au client)
+                    $confirmationMail->setFrom('taharmoha02@gmail.com', 'Mohamed Tahar Djebbar');
+                    $confirmationMail->addAddress($email, $name);
+                    
+                    // Contenu de la confirmation
+                    $confirmationMail->isHTML(true);
+                    $confirmationMail->Subject = "Confirmation de réception de votre message";
+                    
+                    // Message de confirmation en HTML
+                    $confirmationHtml = "
+                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;'>
+                        <h2 style='color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;'>Confirmation de réception</h2>
+                        
+                        <p>Bonjour <strong>$name</strong>,</p>
+                        
+                        <p>Merci pour votre message concernant \"<strong>$subject_text</strong>\".</p>
+                        
+                        <p>J'ai bien reçu votre demande et je vous recontacterai dans les plus brefs délais.</p>
+                        
+                        <div style='background-color: #f9f9f9; padding: 15px; margin: 20px 0; border-left: 4px solid #4CAF50; border-radius: 3px;'>
+                            <p><strong>Récapitulatif de votre message :</strong></p>
+                            <p><strong>Sujet :</strong> $subject_text</p>
+                            <p><strong>Message :</strong><br>" . nl2br(substr($message, 0, 200)) . (strlen($message) > 200 ? "..." : "") . "</p>
+                        </div>
+                        
+                        <p>Si vous avez d'autres questions ou informations à ajouter, n'hésitez pas à répondre directement à cet email.</p>
+                        
+                        <p>Cordialement,<br>
+                        <strong>Mohamed Tahar Djebbar</strong><br>
+                        Développeur Web & Mobile<br>
+                        taharmoha02@gmail.com<br>
+                        +213 5 58 67 10 50</p>
+                        
+                        <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #777;'>
+                            <p>Ceci est un message automatique, merci de ne pas y répondre directement.</p>
+                        </div>
+                    </div>";
+                    
+                    // Version texte brut alternative
+                    $confirmationText = "Confirmation de réception\n\n";
+                    $confirmationText .= "Bonjour $name,\n\n";
+                    $confirmationText .= "Merci pour votre message concernant \"$subject_text\".\n\n";
+                    $confirmationText .= "J'ai bien reçu votre demande et je vous recontacterai dans les plus brefs délais, généralement sous 48 heures ouvrables.\n\n";
+                    $confirmationText .= "Récapitulatif de votre message :\n";
+                    $confirmationText .= "Sujet : $subject_text\n";
+                    $confirmationText .= "Message : " . substr($message, 0, 200) . (strlen($message) > 200 ? "..." : "") . "\n\n";
+                    $confirmationText .= "Si vous avez d'autres questions ou informations à ajouter, n'hésitez pas à répondre directement à cet email.\n\n";
+                    $confirmationText .= "Cordialement,\n";
+                    $confirmationText .= "Mohamed Tahar Djebbar\n";
+                    $confirmationText .= "Développeur Web & Mobile\n";
+                    $confirmationText .= "taharmoha02@gmail.com\n";
+                    $confirmationText .= "+213 5 58 67 10 50\n\n";
+                    $confirmationText .= "Ceci est un message automatique, merci de ne pas y répondre directement.";
+                    
+                    $confirmationMail->Body    = $confirmationHtml;
+                    $confirmationMail->AltBody = $confirmationText;
+                    
+                    $confirmationMail->send();
+                }
+            } catch (Exception $e) {
+                // Enregistrer l'erreur
+                error_log("Erreur d'envoi d'email: " . $mail->ErrorInfo);
+                $email_error = true;
+            }
+        } else {
+            // Option 2: Utiliser mail() avec plus de contrôle d'erreur
+            $to = "taharmoha02@gmail.com";
+            $subject_text = isset($subjects[$subject]) ? $subjects[$subject] : $subject;
+            $subject_email = "Nouveau message de contact: $subject_text";
+            
+            // Pour un meilleur format d'email
+            $email_content = "<!DOCTYPE html>
+            <html>
+            <head>
+                <title>Nouveau message de contact</title>
+            </head>
+            <body>
+                <h2>Nouveau message de contact</h2>
+                <p><strong>Nom:</strong> $name</p>
+                <p><strong>Email:</strong> $email</p>";
+            
+            if (!empty($phone)) {
+                $email_content .= "<p><strong>Téléphone:</strong> $phone</p>";
+            }
+            
+            $email_content .= "<p><strong>Sujet:</strong> $subject_text</p>
+                <p><strong>Message:</strong><br>" . nl2br($message) . "</p>
+            </body>
+            </html>";
+            
+            // En-têtes pour un email HTML
+            $headers = "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $headers .= "From: $name <$email>\r\n";
+            $headers .= "Reply-To: $email\r\n";
+            $headers .= "X-Mailer: PHP/" . phpversion();
+            
+            // Tenter d'envoyer l'email sans supprimer les erreurs
+            $email_sent = mail($to, $subject_email, $email_content, $headers);
+            
+            if (!$email_sent) {
+                $email_error = true;
+                // Enregistrer l'erreur
+                error_log("Échec de l'envoi d'email via mail() - vérifiez la configuration de votre serveur.");
+            }
+            
+            // Si l'email a été envoyé avec succès, on envoie toujours l'email de confirmation
+            if ($email_sent) {
+                // Préparer l'email de confirmation
+                $confirmation_to = $email;
+                $confirmation_subject = "Confirmation de réception de votre message";
+                
+                // Message de confirmation en HTML
+                $confirmation_content = "<!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Confirmation de réception</title>
+                </head>
+                <body>
+                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;'>
+                        <h2 style='color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;'>Confirmation de réception</h2>
+                        
+                        <p>Bonjour <strong>$name</strong>,</p>
+                        
+                        <p>Merci pour votre message concernant \"<strong>$subject_text</strong>\".</p>
+                        
+                        <p>J'ai bien reçu votre demande et je vous recontacterai dans les plus brefs délais, généralement sous 48 heures ouvrables.</p>
+                        
+                        <div style='background-color: #f9f9f9; padding: 15px; margin: 20px 0; border-left: 4px solid #4CAF50; border-radius: 3px;'>
+                            <p><strong>Récapitulatif de votre message :</strong></p>
+                            <p><strong>Sujet :</strong> $subject_text</p>
+                            <p><strong>Message :</strong><br>" . nl2br(substr($message, 0, 200)) . (strlen($message) > 200 ? "..." : "") . "</p>
+                        </div>
+                        
+                        <p>Si vous avez d'autres questions ou informations à ajouter, n'hésitez pas à répondre directement à cet email.</p>
+                        
+                        <p>Cordialement,<br>
+                        <strong>Mohamed Tahar Djebbar</strong><br>
+                        Développeur Web & Mobile<br>
+                        taharmoha02@gmail.com<br>
+                        +213 5 58 67 10 50</p>
+                        
+                        <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #777;'>
+                            <p>Ceci est un message automatique, merci de ne pas y répondre directement.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>";
+                
+                // En-têtes pour l'email de confirmation
+                $confirmation_headers = "MIME-Version: 1.0\r\n";
+                $confirmation_headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+                $confirmation_headers .= "From: Mohamed Tahar Djebbar <taharmoha02@gmail.com>\r\n";
+                $confirmation_headers .= "Reply-To: taharmoha02@gmail.com\r\n";
+                $confirmation_headers .= "X-Mailer: PHP/" . phpversion();
+                
+                // Envoi de l'email de confirmation
+                mail($confirmation_to, $confirmation_subject, $confirmation_content, $confirmation_headers);
+            }
         }
-        $log_message .= "Sujet: " . (isset($subjects[$subject]) ? $subjects[$subject] : $subject) . "\n";
-        $log_message .= "Message: $message\n";
-        $log_message .= "IP: " . $_SERVER['REMOTE_ADDR'] . "\n";
-        $log_message .= "Navigateur: " . $_SERVER['HTTP_USER_AGENT'] . "\n";
-        $log_message .= "--------------------------------------------------\n\n";
 
-        // Créer le dossier logs s'il n'existe pas
-        if (!file_exists('logs')) {
-            mkdir('logs', 0755, true);
-        }
-
-        // Tentative d'écriture dans le fichier log
-        $log_file = 'logs/contact_messages.log';
-        $log_success = file_put_contents($log_file, $log_message, FILE_APPEND);
-
-        // Si vous essayez d'utiliser la fonction mail() (qui peut échouer dans l'environnement local)
-        $to = "taharmoha02@gmail.com";
-        $subject_text = isset($subjects[$subject]) ? $subjects[$subject] : $subject;
-        $subject_email = "Nouveau message de contact: $subject_text";
-
-        $email_content = "Nom: $name\n";
-        $email_content .= "Email: $email\n";
-        if (!empty($phone)) {
-            $email_content .= "Téléphone: $phone\n";
-        }
-        $email_content .= "\nMessage:\n$message";
-
-        $headers = "From: $email\r\n";
-        $headers .= "Reply-To: $email\r\n";
-        $headers .= "X-Mailer: PHP/" . phpversion();
-
-        // Essayez d'envoyer l'email, mais ne vous fiez pas à sa réussite en environnement local
-        @mail($to, $subject_email, $email_content, $headers);
-
-        // Considérer le message comme envoyé si au moins le log a fonctionné
-        if ($log_success) {
+        // Si l'email a été envoyé avec succès
+        if ($email_sent) {
             // Réinitialisation des champs et affichage du message de succès
             $name = $email = $phone = $subject = $message = '';
             $success = true;
-
+    
             // On mémorise le succès dans la session pour pouvoir le montrer après une redirection
             $_SESSION['contact_success'] = true;
-
+            // On indique toujours que la confirmation a été envoyée
+            $_SESSION['confirmation_sent'] = true;
+    
             // Redirection pour éviter les soumissions multiples
             header("Location: contact.php?status=success");
             // Vider et terminer la mise en tampon avant de sortir
             ob_end_flush();
             exit;
         } else {
-            $errors['mail'] = 'Erreur lors de l\'enregistrement de votre message. Veuillez réessayer.';
+            $errors['mail'] = 'Erreur lors de l\'envoi de votre message. Veuillez réessayer.';
         }
     }
 }
@@ -130,7 +322,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Vérifier s'il y a un message de succès dans la session
 if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['contact_success'])) {
     $success = true;
+    $confirmationSent = isset($_SESSION['confirmation_sent']) ? $_SESSION['confirmation_sent'] : false;
     unset($_SESSION['contact_success']); // On supprime pour ne pas réafficher à chaque visite
+    unset($_SESSION['confirmation_sent']);
 }
 ?>
 <!DOCTYPE html>
@@ -147,7 +341,6 @@ if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['
     <script src="assets/assets/aos/aos.js"></script>
     <link rel="stylesheet" href="assets/css/haut.css">
     <script src="assets/js/haut.js"></script>
-
 </head>
 
 <body>
@@ -222,8 +415,8 @@ if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['
                                 <i class="fas fa-check-circle"></i>
                             </div>
                             <h3>Message envoyé avec succès!</h3>
-                            <p>Merci pour votre message. Je vous répondrai dans les plus brefs délais, généralement sous 48
-                                heures.</p>
+                            <p>Merci pour votre message. Je vous répondrai dans les plus brefs délais.</p>
+                            <p><i class="fas fa-envelope"></i> Une confirmation a été envoyée à votre adresse email.</p>
                             <a href="contact.php" class="btn">Envoyer un autre message</a>
                         </div>
                     <?php else: ?>
@@ -306,14 +499,6 @@ if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['
                                         <?php echo $errors['message']; ?></span>
                                 <?php endif; ?>
                             </div>
-
-                            <!-- Intégration reCAPTCHA -->
-                            <!-- <div class="form-group <?php echo isset($errors['captcha']) ? 'has-error' : ''; ?>">
-                            <div class="g-recaptcha" data-sitekey="VOTRE_CLE_SITE_RECAPTCHA"></div>
-                            <?php if (isset($errors['captcha'])): ?>
-                                <span class="error-text"><i class="fas fa-exclamation-circle"></i> <?php echo $errors['captcha']; ?></span>
-                            <?php endif; ?>
-                        </div> -->
 
                             <div class="form-group form-privacy">
                                 <label class="checkbox-container">
