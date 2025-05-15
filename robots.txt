@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://tahar-djebbar.onrender.com/sitemap.xml
